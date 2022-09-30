@@ -4,10 +4,10 @@ describe('Signup test cases', ()=>{
 
     describe('Signup valid test cases',()=>{
         
-        xit('Normal scenario sign up using email',()=>{
+        it('Normal scenario sign up using email',()=>{
             cy.visit("/");
             cy.url().should('eq',Cypress.config("baseUrl")+"/");
-            cy.get('#email').should('be.visible').type("testuser03@gmail.com");
+            cy.get('#email').should('be.visible').type("testuser005@gmail.com");
             cy.get('#password').should('be.visible').type("Tester@123$");
             cy.get('button[type=submit]',{timeout: 10000}).should('be.visible').contains('Sign up').click();
             cy.get('button[aria-label=Loading]',{timeout: 15000}).should('not.exist');
@@ -17,70 +17,41 @@ describe('Signup test cases', ()=>{
 
         it('Sign up using Linkedin',()=>{
             // Remove access from linkedin for acessing data and clear browser data every time
-
-            cy.clearCookies();
             cy.visit("/");
             cy.url().should('eq',Cypress.config("baseUrl")+"/");
             cy.get('button[aria-label="Sign up  with LinkedIn"][type=submit]',{timeout: 10000}).should('be.visible').click();
-            cy.url({timeout:10000}).then($url=>{
-                const url=$url.toString();
-                expect(url).contains("https://www.linkedin.com/uas/login");
-            });
-            cy.get('#username', {timeout: 10000}).should('be.visible').clear().type('testblazefire@gmail.com');
-            cy.get('#password', {timeout: 10000}).should('be.visible').type('TestUser@123$');
-            cy.get('button[aria-label="Sign in"]',{timeout: 10000}).should('be.visible').click();
-            cy.url({timeout:10000}).then($url=>{
-                const url=$url.toString();
-                expect(url).contains("https://www.linkedin.com/oauth/v2/login-success");
-            });
-
-            cy.get('#oauth__auth-form',{timeout: 15000}).should('be.visible').then(button=>{
-                cy.get('#oauth__auth-form__submit-btn',{timeout: 15000}).should('be.enabled').click();
-            });
-            cy.pause();
-        });
-
-        xit('Sign up using Google',()=>{
-            cy.visit("/");
-            cy.url().should('eq',Cypress.config("baseUrl")+"/");  
-            cy.window().document().then(doc=>{
-                doc.addEventListener('click', ()=>{
-                    setTimeout(()=>{
-                        Cypress.config('baseUrl',"https://accounts.google.com/o/oauth2/auth/identifier");
-                        doc.location.reload();
-                    },15000);                    
-                });
-                cy.get('button[aria-label="Sign up  with Google"][type=submit]',{timeout: 10000}).should('be.visible').click();
-                cy.url({timeout:10000}).then($url=>{
-                    const url=$url.toString();
-                    expect(url).contains("https://accounts.google.com");
-                });
-                cy.get('#username', {timeout: 10000}).should('be.visible').type('Testuser@gmail.com');
-                cy.get('#password', {timeout: 10000}).should('be.visible').type('Password');
-            });
-            
-
-            // Login credentials required
-        });
-
-        // Sign up  with Facebook
-
-        xit('Sign up using Facebook',()=>{
-            cy.visit("/");
-            cy.url().should('eq',Cypress.config("baseUrl")+"/");
-            cy.get('button[aria-label="Sign up  with Facebook"][type=submit]',{timeout: 10000}).should('be.visible').click();
-            cy.url({timeout:10000}).then($url=>{
-                const url=$url.toString();
-                expect(url).contains("https://www.facebook.com/v5.0/dialog/oauth");
-            });
-            cy.get('[data-testid="royal_email"]', {timeout: 10000}).should('be.visible').type('Testuser@gmail.com');
-            cy.get('[data-testid="royal_pass"]', {timeout: 10000}).should('be.visible').type('Password');
-            cy.get('[data-testid="royal_login_button"]',{timeout: 10000}).should('be.visible').click();
-            // Login credentials required
+            cy.url().then((url) => {
+                if (url.includes('linkedin')) {
+                    cy.url({timeout: 15000}).then($url=>{
+                        let url=$url.toString();
+                        url.includes("https://www.linkedin.com/uas/login");
+                        });
+                    // has issues with the user generating CSRF token issue and sometimes redirecting to the login page because of failure in validation showing duplicate id and failing to load
+                    cy.get('#username',{timeout: 10000}).clear().type('testblazefire@gmail.com');
+                    cy.get('#password',{timeout:10000}).clear().type('TestUser@123$');
+                    cy.get('button[aria-label="Sign in"]').click();
+                    cy.url({timeout: 10000});
+    
+                    cy.url().then((url) => {
+                        if (url.includes('linkedin')) {
+                    // Check URL redirection or not
+                            cy.get('button[value=authorize]').then($button => {
+                                if ($button.is(':visible')){
+                                    cy.get('button[value=authorize]').click();
+                                }
+                            });
+                            cy.url({timeout: 10000}).should('include','learn');
+                            cy.url({timeout: 10000}).should('include','welcome/find-a-course');
+                            cy.title().should('eq','learn');
+                            cy.title().should('eq','Welcome | Codecademy');
+                        } 
+                    });
+                }
+            }); 
         });
     });
 
-    xdescribe('Signup invalid test cases',()=>{
+    describe('Signup invalid test cases',()=>{
         
         it('Sign up with the same user email',()=>{
             cy.visit("/");
