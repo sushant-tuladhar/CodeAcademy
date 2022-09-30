@@ -1,0 +1,14 @@
+{
+  "name": "codeacademysignup",
+  "version": "1.0.0",
+  "description": "Code Academy test cases for signup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sushant Tuladhar",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^10.9.0"
+  }
+}
