@@ -4,7 +4,7 @@ describe('Signup test cases', ()=>{
 
     describe('Signup valid test cases',()=>{
         
-        it('Normal scenario sign up using email',()=>{
+        xit('Normal scenario sign up using email',()=>{
             cy.visit("/");
             cy.url().should('eq',Cypress.config("baseUrl")+"/");
             cy.get('#email').should('be.visible').type("testuser005@gmail.com");
@@ -16,7 +16,6 @@ describe('Signup test cases', ()=>{
         });
 
         it('Sign up using Linkedin',()=>{
-            // Remove access from linkedin for acessing data and clear browser data every time
             cy.visit("/");
             cy.url().should('eq',Cypress.config("baseUrl")+"/");
             cy.get('button[aria-label="Sign up  with LinkedIn"][type=submit]',{timeout: 10000}).should('be.visible').click();
@@ -51,7 +50,7 @@ describe('Signup test cases', ()=>{
         });
     });
 
-    describe('Signup invalid test cases',()=>{
+    xdescribe('Signup invalid test cases',()=>{
         
         it('Sign up with the same user email',()=>{
             cy.visit("/");
